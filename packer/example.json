@@ -1,0 +1,51 @@
+{
+    "variables": {
+        "profile": "sanjuprofile",
+        "region": "us-east-1",
+        "type": "amazon-ebs"
+    },
+    "builders": [{
+      "name": "sanju-ami",
+      "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "us-east-1",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*",
+          "root-device-type": "ebs"
+        },
+        "owners": ["099720109477"],
+        "most_recent": true
+      },
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "packer-example {{timestamp}}"
+    }], 
+
+    "provisioners": [
+      {
+      "type": "shell",
+      "script": "scripts/cron.sh",
+      "inline": [
+        "sleep 30",
+        "sudo apt-get update -y",
+        "sudo apt-get install -y redis-server"
+      ]
+    },
+    {
+      "type": "shell",
+      "script": "cron.sh"
+    },
+    {
+      "type": "ansible-local",
+      "playbook_file": "/Users/sanjana/Documents/ansible/apache.yml"
+    }
+  
+  
+  
+  ]
+    
+
+  }
